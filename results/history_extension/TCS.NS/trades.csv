@@ -1,0 +1,2 @@
+side,entry_date,exit_date,qty,entry_price,entry_fill,stop,exit_fill,reason,target_sma,entry_equity,pnl,return_on_equity,entry_cost,exit_cost
+SHORT,2004-05-07,2004-05-31,160,116.25,116.19187500000001,122.5,79.1645625,SMA_TARGET,81.80297560918899,100000.0,5900.77,0.0590077,23.6,23.6

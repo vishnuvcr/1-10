@@ -1,0 +1,2 @@
+side,entry_date,exit_date,qty,entry_price,entry_fill,stop,exit_fill,reason,target_sma,entry_equity,pnl,return_on_equity,entry_cost,exit_cost
+SHORT,1999-12-07,1999-12-07,2259,8.180000305175781,8.175910305023194,7.737500190734863,8.184090305328368,STOP_ENTRY_DAY,5.170714310237339,100000.0,-42.07862068938798,-0.00042078620689387983,23.6,23.6
