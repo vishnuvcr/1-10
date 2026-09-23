@@ -1,4 +1,4 @@
-# 1-10 Quant Research"éİyø§yÔ Final Daily Mean-Reversion Study
+# 1-10 Quant Research - Final Daily Mean-Reversion Study
 
 ## Final status
 
