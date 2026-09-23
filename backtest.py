@@ -635,6 +635,29 @@ def vectorbt_reconciliation(
     if trades.empty:
         return {"available": True, "trade_count": 0}
 
+    entry_dates = pd.to_datetime(trades["entry_date"])
+    exit_dates = pd.to_datetime(trades["exit_date"])
+    if (entry_dates == exit_dates).any():
+        return {
+            "available": True,
+            "reconciled": False,
+            "reconciliation_error": (
+                "Same-day round trips cannot be faithfully represented by one "
+                "daily order-price slot; the primary event-driven ledger remains authoritative."
+            ),
+        }
+
+    all_order_dates = pd.Index(entry_dates.tolist() + exit_dates.tolist())
+    if all_order_dates.duplicated().any():
+        return {
+            "available": True,
+            "reconciled": False,
+            "reconciliation_error": (
+                "Multiple orders share a daily timestamp; vectorbt reconciliation "
+                "requires intraday order prices."
+            ),
+        }
+
     orders = pd.DataFrame(0.0, index=data.index, columns=["size", "price"])
     for _, trade in trades.iterrows():
         entry_date = pd.Timestamp(trade["entry_date"])
