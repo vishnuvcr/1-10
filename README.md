@@ -1,19 +1,44 @@
-# 1-10 Quant Research Repository
+# 1-10 Quant Research - Final Daily Mean-Reversion Study
 
-## Current research status
+## Final status
 
-Phase 1 of the daily RSI/SMA gap-reversion research suite is under active validation.
+The full research cycle is complete through Phase 7.
 
-- Phase 1 branch: `phase-1-backtest-validation`
-- Research plan: `docs/RESEARCH_PLAN.md`
-- Phase status: `docs/PHASE_STATUS.md`
-- Error log: `docs/ERROR_LOG.md`
-- Validation log: `docs/VALIDATION_LOG.md`
-- Literature matrix: `docs/LITERATURE_MATRIX.md`
-- Data source registry: `docs/DATA_SOURCE_REGISTRY.md`
+### Main empirical result
 
-## Current gate
+The locked 21-SMA / 14-RSI 10/90 gap-reversion rule is extremely sparse. NIFTY 50 in the 2010-2026 primary sample generated zero qualifying signals. Maximum-history testing across the fixed universe generated only 15 completed trades in total, with a maximum of 9 trades for any symbol. All inferential results are therefore descriptive-only.
 
-The dependency conflict found by CI has been resolved. The next CI pass must validate the corrected test fixture and same-day stop/target test. No historical performance result is certified until CI passes and a frozen market-data run is executed.
+The study does not establish a durable trading edge or production readiness.
 
-The strategy implementation explicitly distinguishes the literal user-specified entry-bar stop, which is non-causal on daily OHLC, from a causal previous-bar stop mode. The daily SMA target is based on the prior-session 21-SMA to avoid current-bar look-ahead.
+## Manuscript
+
+[Complete research manuscript](docs/RESEARCH_MANUSCRIPT.md)
+
+[Research landing page](docs/index.md)
+
+## Research evidence
+
+[Research plan](docs/RESEARCH_PLAN.md)  
+[Phase status](docs/PHASE_STATUS.md)  
+[Error log](docs/ERROR_LOG.md)  
+[Validation log](docs/VALIDATION_LOG.md)  
+[Literature matrix](docs/LITERATURE_MATRIX.md)  
+[Data source registry](docs/DATA_SOURCE_REGISTRY.md)
+
+## Core implementation
+
+[backtest.py](backtest.py)  
+[requirements.txt](requirements.txt)  
+[Unit tests](tests/test_backtest.py)
+
+## Frozen results
+
+[Maximum-history result artifacts](results/history_extension/)  
+[Cost sensitivity grid](results/cost_sensitivity.csv)  
+[Statistical validation](results/statistical_validation.csv)
+
+## Reproducibility
+
+Every research phase has a dedicated branch and documented status. GitHub Actions executes the code and stores the data/results artifacts. Raw-data manifests record SHA-256 hashes.
+
+The next useful research experiment is not parameter optimization. It is a new preregistered study using intraday execution data and a directly tradable instrument with segment-accurate transaction costs.
