@@ -11,8 +11,10 @@
 | 6 Statistical validation | Complete, descriptive-only | 100% |
 | 7 Manuscript | Complete | 100% |
 
-## Final gate
+## Final research finding
 
-The locked rule is not promoted to live trading. The largest symbol-level sample contains only nine completed trades and the primary NIFTY sample contains zero qualifying signals.
+The locked rule generated no NIFTY 50 signals in the 2010-2026 primary sample and only 15 completed trades across the fixed seven-symbol maximum-history diagnostic. The maximum symbol-level trade count was 9.
 
-The research stops here by design. Any threshold change, regime filter, or different execution assumption should start as a new preregistered research branch.
+## Final disposition
+
+The study stops here by design. No live-trading or production-readiness claim is made. Any parameter change or new data-resolution assumption must start a new preregistered research phase.

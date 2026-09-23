@@ -2,12 +2,19 @@
 
 ## 2026-09-23
 
-Phase 1 CI: PASS, 7 tests.
-Phase 2 primary NIFTY 2010-2026: PASS, 4,106 rows, zero qualifying signals at RSI 10/90.
-Phase 3 fixed universe 2010-2026: PASS, all seven symbols executed with zero trade population.
-Phase 3 maximum-history diagnostic: PASS, 2007-2026 for ^NSEI and 1996/2002-2026 for the equities; five symbols produced only 1-9 trades each.
-Phase 5 cost sensitivity: PASS, 84 cost-grid combinations.
-Phase 6 first attempt: FAILED in validator on an empty no-trade CSV; unit tests still passed.
-Phase 6 fix: zero-trade CSV is now treated as a valid no-trade symbol and excluded from mean/sign tests.
+- Phase 1 CI: PASS, 7 unit tests.
+- Dependency conflict with vectorbt/pandas: detected and fixed.
+- Invalid synthetic no-trade fixture: detected and fixed.
+- Vectorbt daily same-timestamp reconciliation ambiguity: detected and fail-safe handling added.
+- Phase 2 primary NIFTY run: PASS, 4,106 observations, zero qualifying RSI<10/RSI>90 signals.
+- Phase 2 data manifest: SHA-256 recorded.
+- Phase 3 fixed seven-symbol 2010-2026 run: PASS, zero completed trades.
+- Phase 3 maximum-history diagnostic: PASS, 15 completed trades across five symbols.
+- Phase 5 fixed cost sensitivity: PASS, 84 combinations.
+- Phase 6 statistical validation: first run failed on an empty trade-ledger CSV; validator fixed to treat no-trade ledgers as valid.
+- Phase 6 rerun: PASS; 10,000 bootstrap resamples and exact sign tests completed.
+- Phase 7 manuscript: COMPLETE.
 
-Current statistical interpretation remains descriptive-only because every symbol has fewer than 30 completed trades.
+## Final statistical status
+
+All symbol-level inference is descriptive-only because every symbol has fewer than 30 completed trades.
