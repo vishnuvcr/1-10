@@ -20,4 +20,8 @@ E008 - Local environment cannot reach github.com and lacks yfinance/vectorbt. Re
 
 E009 - CI dependency conflict. vectorbt 1.1.0 requires pandas >=3.0.3,<4.0 while the previous requirement used pandas <3. Resolved by moving the pandas constraint to >=3.0.3,<4.
 
-E010 - CI test-fixture failure. The original synthetic trending fixture legitimately generated 59 short trades, so the test expecting zero trades was invalid. Resolved by adding a flat-price fixture for the no-signal test and a direct stop/target conflict assertion.
+E010 - CI test-fixture failure. The original synthetic trending fixture legitimately generated 59 short trades, so the test expecting zero trades was invalid. Resolved with a flat-price fixture and direct stop/target tests.
+
+E011 - Vectorbt reconciliation ambiguity. Daily data cannot represent same-day or multiple-order timestamps with a single price slot. Reconciliation now refuses those cases instead of silently producing a misleading result.
+
+E012 - Phase 2 workflow expression escaping. The first generated YAML preserved backslashes before GitHub expression variables, causing the shell to receive values such as \previous_bar_extreme. Resolved by generating literal GitHub expressions without the extra slash.
