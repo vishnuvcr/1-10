@@ -83,11 +83,11 @@ jobs:
           python backtest.py \
             --ticker "${{ inputs.ticker }}" \
             --start "${{ inputs.start }}" \
-            \${END_ARG} \
+            ${END_ARG} \
             --stop-mode "${{ inputs.stop_mode }}" \
             --n-mc "${{ inputs.monte_carlo }}" \
             --seed "${{ inputs.seed }}" \
-            \${EXTRA_REFRESH} \
+            ${EXTRA_REFRESH} \
             --output-dir results
       - uses: actions/upload-artifact@v4
         with:
