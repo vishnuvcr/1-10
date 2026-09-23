@@ -1,7 +1,15 @@
 import numpy as np
 import pandas as pd
 
-from backtest import CostModel, add_indicators, monte_carlo_simulation, position_size, run_backtest
+from backtest import (
+    CostModel,
+    _stop_hit,
+    _target_hit,
+    add_indicators,
+    monte_carlo_simulation,
+    position_size,
+    run_backtest,
+)
 
 
 def synthetic_data(n=80):
@@ -13,6 +21,20 @@ def synthetic_data(n=80):
             "High": close.values + 1,
             "Low": close.values - 1,
             "Close": close.values,
+            "Volume": 1000,
+        },
+        index=idx,
+    )
+
+
+def flat_data(n=80):
+    idx = pd.bdate_range("2024-01-01", periods=n)
+    return pd.DataFrame(
+        {
+            "Open": 100.0,
+            "High": 100.0,
+            "Low": 100.0,
+            "Close": 100.0,
             "Volume": 1000,
         },
         index=idx,
@@ -49,14 +71,23 @@ def test_monte_carlo_shape_and_risk_keys():
     assert set(summary["risk_of_ruin"]) == {"10%", "20%", "30%", "40%", "50%"}
 
 
-def test_empty_trades_do_not_crash_backtest():
+def test_flat_market_does_not_generate_trades():
     trades, equity, metrics = run_backtest(
-        synthetic_data(),
+        flat_data(),
         costs=CostModel(brokerage_per_order=0, slippage_bps=0),
     )
     assert trades.empty
     assert len(equity) == 80
     assert np.isfinite(metrics["final_equity"])
+
+
+def test_same_bar_stop_target_conflict_is_stop_first():
+    row = pd.Series({"Open": 100.0, "High": 105.0, "Low": 95.0})
+    stop_hit, stop_fill = _stop_hit(row, "LONG", 97.0)
+    target_hit, target_fill = _target_hit(row, "LONG", 103.0)
+    assert stop_hit and target_hit
+    assert stop_fill == 97.0
+    assert target_fill == 103.0
 
 
 def test_causal_stop_mode_is_explicit():

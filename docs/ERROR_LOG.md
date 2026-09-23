@@ -18,4 +18,6 @@ E007 - Current-bar SMA target look-ahead. Resolved by using the prior-session 21
 
 E008 - Local environment cannot reach github.com and lacks yfinance/vectorbt. Repository CI is the integration-validation path.
 
-E009 - CI dependency conflict. vectorbt 1.1.0 requires pandas >=3.0.3 and <4.0, while requirements previously pinned pandas <3. Resolved by moving the pandas constraint to >=3.0.3,<4.
+E009 - CI dependency conflict. vectorbt 1.1.0 requires pandas >=3.0.3,<4.0 while the previous requirement used pandas <3. Resolved by moving the pandas constraint to >=3.0.3,<4.
+
+E010 - CI test-fixture failure. The original synthetic trending fixture legitimately generated 59 short trades, so the test expecting zero trades was invalid. Resolved by adding a flat-price fixture for the no-signal test and a direct stop/target conflict assertion.

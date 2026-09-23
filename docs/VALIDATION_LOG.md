@@ -2,18 +2,19 @@
 
 ## 2026-09-23
 
-### Static/code review
+### Static review
 - Removed current-bar SMA look-ahead.
 - Added prior-session SMA target.
 - Added explicit causal previous-bar stop mode.
-- Added tests for shifted SMA, position sizing, Monte Carlo output shape and causal mode metadata.
-- Added pull-request smoke testing and full manual backtest workflow.
+- Added tests for shifted SMA, position sizing, Monte Carlo output shape, causal mode, flat-market no-signal behavior, and same-day stop/target ordering.
 
-### CI finding
-GitHub Actions run 35850749739 reached pip install and failed before pytest. The resolver identified a real dependency conflict: vectorbt 1.1.0 requires pandas >=3.0.3,<4.0, while the repository required pandas <3.
+### CI findings
+Run 35850749739 failed at dependency installation because vectorbt 1.1.0 requires pandas >=3.0.3,<4. That was fixed.
+
+Run 35851173440 then installed the corrected dependency set successfully, including pandas 3.0.6, vectorbt 1.1.0 and yfinance 1.7.0, but failed one invalid test fixture: the trending fixture generated legitimate short signals. The backtest itself returned 59 trades for that fixture.
 
 ### Fix
-requirements.txt now requires pandas >=3.0.3,<4. The latest pandas release listed by PyPI is 3.0.6 (17 September 2026). vectorbt 1.1.0 was released 5 July 2026 and yfinance 1.7.0 was released 26 August 2026.
+Replaced the invalid empty-trade fixture with a flat market dataset that has RSI=50 and no gap signals. Added a direct test that both stop and target can be touched on a daily bar and the research policy resolves the ambiguity as stop-first.
 
 ### Status
-A new PR validation run is expected after the dependency fix. No historical performance result is certified until CI passes and a frozen market-data run completes.
+A new validation run must pass all tests before Phase 1 can close.
