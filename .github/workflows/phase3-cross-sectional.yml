@@ -1,0 +1,109 @@
+name: Phase 3 Cross-Sectional Robustness
+
+on:
+  push:
+    branches:
+      - phase-3-cross-sectional-robustness
+  workflow_dispatch:
+    inputs:
+      universe:
+        description: Comma-separated Yahoo Finance tickers
+        required: true
+        default: ^NSEI,RELIANCE.NS,HDFCBANK.NS,ICICIBANK.NS,INFY.NS,TCS.NS,SBIN.NS
+      start:
+        description: Start date YYYY-MM-DD
+        required: true
+        default: 2010-01-01
+      end:
+        description: End date YYYY-MM-DD
+        required: true
+        default: 2026-09-23
+      monte_carlo:
+        description: Monte Carlo paths per symbol
+        required: true
+        default: '1000'
+      seed:
+        description: Base RNG seed
+        required: true
+        default: '42'
+      refresh_data:
+        description: Force data redownload
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+jobs:
+  cross-sectional:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+
+      - uses: actions/cache@v4
+        with:
+          path: data/raw
+          key: phase3-yfinance-${{ github.ref_name }}-${{ inputs.start || '2010-01-01' }}-${{ inputs.end || '2026-09-23' }}
+          restore-keys: |
+            phase3-yfinance-${{ github.ref_name }}-
+
+      - run: python -m pip install -r requirements.txt
+      - run: python -m pytest -q
+
+      - name: Run fixed universe without parameter tuning
+        env:
+          MPLBACKEND: Agg
+        shell: bash
+        run: |
+          UNIVERSE="${{ inputs.universe || '^NSEI,RELIANCE.NS,HDFCBANK.NS,ICICIBANK.NS,INFY.NS,TCS.NS,SBIN.NS' }}"
+          START="${{ inputs.start || '2010-01-01' }}"
+          END="${{ inputs.end || '2026-09-23' }}"
+          MC="${{ inputs.monte_carlo || '1000' }}"
+          SEED="${{ inputs.seed || '42' }}"
+          REFRESH="${{ inputs.refresh_data || 'false' }}"
+
+          mkdir -p results
+          IFS=',' read -ra TICKERS <<< "$UNIVERSE"
+          for ticker in "${TICKERS[@]}"; do
+            ticker="${ticker//[[:space:]]/}"
+            slug="$(echo "$ticker" | tr -cd '[:alnum:]._-')"
+            mkdir -p "results/$slug"
+
+            EXTRA=""
+            if [ "$REFRESH" = "true" ]; then EXTRA="--refresh-data"; fi
+
+            echo "=== $ticker ==="
+            python backtest.py               --ticker "$ticker"               --start "$START"               --end "$END"               --stop-mode previous_bar_extreme               --n-mc "$MC"               --seed "$SEED"               $EXTRA               --output-dir "results/$slug"               > "results/$slug/run.log"
+          done
+
+      - name: Aggregate cross-sectional results
+        run: python scripts/aggregate_cross_sectional.py
+
+      - name: Display summary
+        run: cat results/cross_sectional_summary.csv
+
+      - name: Freeze data and results into branch
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/raw results
+          if git diff --cached --quiet; then
+            echo "No new artifacts to commit."
+            exit 0
+          fi
+          git commit -m "data: freeze Phase 3 cross-sectional results [skip ci]"
+          git push
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: phase3-cross-sectional
+          path: |
+            results/
+            data/raw/
