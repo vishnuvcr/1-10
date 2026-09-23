@@ -1,0 +1,8 @@
+symbol,trade_count,status,mean_trade_return,median_trade_return,bootstrap_mean_ci_low,bootstrap_mean_ci_high,bootstrap_prob_mean_positive,wins,losses,sign_test_pvalue,inference_status
+^NSEI,0,no_trades,,,,,,,,,
+RELIANCE.NS,2,,-0.02255179899700115,-0.02255179899700115,-0.0335691415904939,-0.0115344564035084,0.0,0.0,2.0,0.5,descriptive_only_n<30
+HDFCBANK.NS,1,,-0.0004207862068938,-0.0004207862068938,-0.0004207862068938,-0.0004207862068938,0.0,0.0,1.0,1.0,descriptive_only_n<30
+ICICIBANK.NS,0,no_trades,,,,,,,,,
+INFY.NS,9,,-0.010774418927030667,-0.0018567592019425,-0.023654639939113858,-0.002199011345908073,0.0,0.0,9.0,0.00390625,descriptive_only_n<30
+TCS.NS,1,,0.0590077,0.0590077,0.0590077,0.0590077,1.0,1.0,0.0,1.0,descriptive_only_n<30
+SBIN.NS,2,,-0.01290611834408915,-0.01290611834408915,-0.0177759421321345,-0.0080362945560438,0.0,0.0,2.0,0.5,descriptive_only_n<30
