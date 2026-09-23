@@ -1,0 +1,61 @@
+{
+  "starting_equity": 100000.0,
+  "final_equity": 100000.0,
+  "final_return": 0.0,
+  "cagr": 0.0,
+  "max_drawdown": 0.0,
+  "sharpe_ratio": 0.0,
+  "trade_count": 0,
+  "win_rate": 0.0,
+  "profit_factor": 0.0,
+  "expectancy_per_trade": 0.0,
+  "gross_profit": 0.0,
+  "gross_loss": 0.0,
+  "NON_CAUSAL_ENTRY_CANDLE_STOP": false,
+  "stop_mode": "previous_bar_extreme",
+  "target_definition": "previous_close_21_sma",
+  "cost_model": {
+    "slippage_bps": 5.0,
+    "brokerage_per_order": 20.0,
+    "exchange_txn_rate": 0.0,
+    "stt_buy_rate": 0.0,
+    "stt_sell_rate": 0.0,
+    "stamp_buy_rate": 0.0,
+    "gst_rate": 0.18,
+    "sebi_turnover_rate": 0.0
+  },
+  "signal_diagnostics": {
+    "rsi_min": 15.919014869420707,
+    "rsi_max": 84.60635809699824,
+    "rsi_below_10_count": 0,
+    "rsi_above_90_count": 0,
+    "gap_down_count": 1731,
+    "gap_up_count": 2288,
+    "long_signal_count": 0,
+    "short_signal_count": 0,
+    "sma_valid_rows": 4111
+  },
+  "research_manifest": {
+    "git_sha": "65065acbee9dd1f8035b28a5e8a147384373e7b8",
+    "ticker": "ICICIBANK.NS",
+    "start": "2010-01-01",
+    "end": "2026-09-23",
+    "data_cache_file": "data/raw/ICICIBANK.NS.csv",
+    "data_sha256": "4d8011a19971338c6a96472e6889b5cb37f24aaeba6a7a92fa6f6600c56b0faf",
+    "data_rows": 4132,
+    "data_first_date": "2010-01-04",
+    "data_last_date": "2026-09-22",
+    "starting_equity": 100000.0,
+    "risk_fraction": 0.01,
+    "lot_size": 1,
+    "stop_mode": "previous_bar_extreme",
+    "target_definition": "previous_close_21_sma",
+    "monte_carlo_paths": 1000,
+    "monte_carlo_seed": 42
+  }
+}
+{
+  "status": "not_run",
+  "reason": "No completed trades were generated."
+}
+Artifacts: /home/runner/work/1-10/1-10/results/ICICIBANK.NS
