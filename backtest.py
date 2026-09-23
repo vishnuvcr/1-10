@@ -545,6 +545,17 @@ def run_backtest(
     result["stop_mode"] = stop_mode
     result["target_definition"] = "previous_close_21_sma"
     result["cost_model"] = asdict(model)
+    result["signal_diagnostics"] = {
+        "rsi_min": float(data["RSI14"].min()) if data["RSI14"].notna().any() else None,
+        "rsi_max": float(data["RSI14"].max()) if data["RSI14"].notna().any() else None,
+        "rsi_below_10_count": int((data["RSI14"] < 10.0).sum()),
+        "rsi_above_90_count": int((data["RSI14"] > 90.0).sum()),
+        "gap_down_count": int((data["Open"] < data["PrevClose"]).sum()),
+        "gap_up_count": int((data["Open"] > data["PrevClose"]).sum()),
+        "long_signal_count": int(data["LongSignal"].sum()),
+        "short_signal_count": int(data["ShortSignal"].sum()),
+        "sma_valid_rows": int(data["PrevSMA21"].notna().sum()),
+    }
     return trades_df, equity_df, result
 
 
