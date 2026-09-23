@@ -66,9 +66,9 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: data/raw
-          key: yfinance-\${{ inputs.ticker }}-\${{ inputs.start }}-\${{ inputs.end }}
+          key: yfinance-${{ inputs.ticker }}-${{ inputs.start }}-${{ inputs.end }}
           restore-keys: |
-            yfinance-\${{ inputs.ticker }}-
+            yfinance-${{ inputs.ticker }}-
       - run: pip install -r requirements.txt
       - run: pytest -q
       - name: Run backtest
@@ -78,15 +78,15 @@ jobs:
         run: |
           EXTRA_REFRESH=''
           END_ARG=''
-          if [ "\${{ inputs.refresh_data }}" = 'true' ]; then EXTRA_REFRESH='--refresh-data'; fi
-          if [ -n "\${{ inputs.end }}" ]; then END_ARG="--end \${{ inputs.end }}"; fi
+          if [ "${{ inputs.refresh_data }}" = 'true' ]; then EXTRA_REFRESH='--refresh-data'; fi
+          if [ -n "${{ inputs.end }}" ]; then END_ARG="--end ${{ inputs.end }}"; fi
           python backtest.py \
-            --ticker "\${{ inputs.ticker }}" \
-            --start "\${{ inputs.start }}" \
+            --ticker "${{ inputs.ticker }}" \
+            --start "${{ inputs.start }}" \
             \${END_ARG} \
-            --stop-mode "\${{ inputs.stop_mode }}" \
-            --n-mc "\${{ inputs.monte_carlo }}" \
-            --seed "\${{ inputs.seed }}" \
+            --stop-mode "${{ inputs.stop_mode }}" \
+            --n-mc "${{ inputs.monte_carlo }}" \
+            --seed "${{ inputs.seed }}" \
             \${EXTRA_REFRESH} \
             --output-dir results
       - uses: actions/upload-artifact@v4
