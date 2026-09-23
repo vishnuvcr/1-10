@@ -1,4 +1,5 @@
 name: Daily Mean-Reversion Backtest
+
 on:
   workflow_dispatch:
     inputs:
@@ -27,13 +28,12 @@ on:
         required: true
         default: false
         type: boolean
-  pull_request:
 
 permissions:
   contents: read
 
 jobs:
-  smoke:
+  backtest:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -41,5 +41,23 @@ jobs:
         with:
           python-version: '3.13'
           cache: pip
+      - uses: actions/cache@v4
+        with:
+          path: data/raw
+          key: yfinance-${{ inputs.ticker }}-${{ inputs.start }}-${{ inputs.end }}
+          restore-keys: yfinance-${{ inputs.ticker }}-
       - run: pip install -r requirements.txt
       - run: pytest -q
+      - name: Run backtest
+        env:
+          MPLBACKEND: Agg
+        run: |
+          EXTRA=''
+          if [ "${{ inputs.refresh_data }}" = 'true' ]; then EXTRA='--refresh-data'; fi
+          python backtest.py --ticker "${{ inputs.ticker }}" --start "${{ inputs.start }}" ${EXTRA} --n-mc "${{ inputs.monte_carlo }}" --seed "${{ inputs.seed }}" --output-dir results
+      - uses: actions/upload-artifact@v4
+        with:
+          name: backtest-results
+          path: |
+            results/
+            data/raw/

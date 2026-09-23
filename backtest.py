@@ -86,6 +86,7 @@ def rsi_wilder(close,period=14):
 
 def add_indicators(df,sma_period=21,rsi_period=14):
     d=df.copy(); d["SMA21"]=d.Close.rolling(sma_period,min_periods=sma_period).mean()
+    d["PrevSMA21"]=d["SMA21"].shift(1)
     d["RSI14"]=rsi_wilder(d.Close,rsi_period); d["PrevRSI14"]=d.RSI14.shift(1); d["PrevClose"]=d.Close.shift(1)
     d["LongSignal"]=(d.PrevRSI14<10)&(d.Open<d.PrevClose)
     d["ShortSignal"]=(d.PrevRSI14>90)&(d.Open>d.PrevClose); return d
@@ -194,7 +195,7 @@ def monte_carlo_simulation(trade_returns,starting_equity=100000.0,n_sims=1000,se
 def plot_monte_carlo(paths,out,start):
     fig,ax=plt.subplots(figsize=(12,7))
     for p in paths: ax.plot(p,alpha=.03,linewidth=.7)
-    ax.axhline(start,ls="--",lw=1,label="Starting equity"); ax.set(xlabel="Completed trades",ylabel="Equity (INR)",title="Monte Carlo Equity Curves ‚Äî Bootstrap With Replacement"); ax.legend(); ax.grid(alpha=.25)
+    ax.axhline(start,ls="--",lw=1,label="Starting equity"); ax.set(xlabel="Completed trades",ylabel="Equity (INR)",title="Monte Carlo Equity Curves+ßuÁ‚ùÁT Bootstrap With Replacement"); ax.legend(); ax.grid(alpha=.25)
     fig.tight_layout(); fig.savefig(out,dpi=160); plt.close(fig)
 
 def vectorbt_reconciliation(data,trades,start):
