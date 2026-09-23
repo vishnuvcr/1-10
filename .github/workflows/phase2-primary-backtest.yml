@@ -41,7 +41,7 @@ on:
         type: boolean
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   primary-backtest:
@@ -89,3 +89,17 @@ jobs:
           path: |
             results/
             data/raw/
+
+      - name: Freeze successful data and results into the branch
+        if: success()
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/raw results
+          if git diff --cached --quiet; then
+            echo "No new frozen artifacts to commit."
+            exit 0
+          fi
+          git commit -m "data: freeze Phase 2 primary run [skip ci]"
+          git push

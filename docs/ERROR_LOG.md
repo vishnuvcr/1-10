@@ -25,3 +25,5 @@ E010 - CI test-fixture failure. The original synthetic trending fixture legitima
 E011 - Vectorbt reconciliation ambiguity. Daily data cannot represent same-day or multiple-order timestamps with a single price slot. Reconciliation now refuses those cases instead of silently producing a misleading result.
 
 E012 - Phase 2 workflow expression escaping. The first generated YAML preserved backslashes before GitHub expression variables, causing the shell to receive values such as \previous_bar_extreme. Resolved by generating literal GitHub expressions without the extra slash.
+
+E013 - Locked NIFTY 50 signal scarcity. The yfinance sample contains 4,106 daily observations from 2010-01-04 through 2026-09-21. RSI14 min/max are 12.94/85.60, so RSI<10 and RSI>90 never occurred; gap conditions were common (1,428 gap-down and 2,665 gap-up days) but the extreme-RSI gate eliminated every trade.
