@@ -3,7 +3,7 @@
 | Phase | Status | Completion |
 |---|---|---:|
 | 0 Governance / bootstrap | Complete | 100% |
-| 1 Strategy implementation | In progress | 75% |
+| 1 Strategy implementation | In progress | 85% |
 | 2 Data freeze | Not started | 0% |
 | 3 Primary backtest | Not started | 0% |
 | 4 Monte Carlo robustness | Implemented, not executed | 50% |
@@ -11,8 +11,16 @@
 | 6 Statistical validation | Not started | 0% |
 | 7 Manuscript | Not started | 0% |
 
-## Current gates
-1. Pass unit tests.
-2. Execute one reproducible run against a frozen data cache.
-3. Review the non-causal entry-candle stop explicitly before interpreting performance.
-4. Use an executable instrument plus an instrument-appropriate cost/borrow model before making implementation claims.
+## Phase 1 progress
+- Strategy signals implemented.
+- Explicit event-driven daily ledger implemented.
+- Transaction costs parameterized.
+- 1,000-path trade bootstrap implemented.
+- Vectorbt reconciliation hook implemented.
+- Manual and pull-request smoke workflow implemented.
+- Current-bar SMA look-ahead removed.
+- Explicit causal previous-bar stop mode added.
+- Unit tests expanded.
+
+## Remaining Phase 1 gate
+A frozen market-data execution and a successful CI/test run are still required before Phase 1 is closed.

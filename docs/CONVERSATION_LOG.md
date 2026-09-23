@@ -1,16 +1,18 @@
 # Conversation / Decision Log
 
-## 2026-09-23 — User request
-Requested a complete Python suite for a daily mean-reversion strategy using 21-SMA, 14-RSI with 10/90 extremes, gap-down long and gap-up short entries, entry at the open, entry-candle low/high stop, SMA take-profit, INR 100,000 initial capital, 1% equity risk, and a 1,000-path trade-return Monte Carlo analysis with drawdown risk-of-ruin.
+## 2026-09-23 - Initial request
+Requested a complete Python backtesting suite for the 21-SMA / 14-RSI gap-reversion strategy with 1% equity risk and 1,000-path Monte Carlo robustness analysis.
 
-Requested files: requirements.txt, backtest.py, README.md, plus local/Codespaces instructions and explicit edge-case handling.
+## 2026-09-23 - Proceed command
+Continued automatically without stopping at the first implementation blocker.
 
-## Observable implementation decisions
-- Explicit pandas/numpy event-driven simulation is the primary ledger.
-- vectorbt is used as a reconciliation layer.
-- Local data cache is preferred to repeated downloads.
-- The literal entry-candle stop is flagged as non-causal with daily bars.
-- Later-day stop/target ambiguity uses a conservative stop-first rule.
-- All cost assumptions are explicit parameters.
+## Decisions made
+- Primary simulation remains explicit pandas/numpy event-driven because daily OHLC lacks intrabar ordering.
+- vectorbt is retained as a reconciliation layer.
+- Literal entry-candle stop mode remains available but is explicitly non-causal.
+- A causal previous-bar stop mode was added.
+- Daily SMA target uses prior-session SMA, not the current closing SMA.
+- Costs are explicit parameters.
+- Every error and validation limitation is logged in docs/ERROR_LOG.md and docs/VALIDATION_LOG.md.
 
-Private chain-of-thought is not stored; this log records user requirements and observable decisions only.
+Private chain-of-thought is not stored; this file records observable decisions and validation events only.

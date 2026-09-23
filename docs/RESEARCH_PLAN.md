@@ -1,55 +1,57 @@
-# Research Plan — Daily RSI/SMA Gap Reversion
+# Research Plan - Daily RSI/SMA Gap Reversion
 
-## Research questions
-1. Does the pre-specified rule produce positive net-of-costs expectancy on daily Indian-market data?
-2. How sensitive are results to the entry-candle stop interpretation, same-day ordering, slippage, and brokerage?
-3. How stable are final returns and maximum drawdowns under 1,000 trade-sequence bootstrap paths?
-4. What is the probability of reaching 10%, 20%, 30%, 40%, and 50% peak-to-trough drawdown?
-5. Do results persist across symbols and date windows without parameter tuning?
+## Questions
+1. Does the locked rule produce positive net-of-costs expectancy on Indian daily data?
+2. How sensitive is the result to stop definition, same-day ordering, slippage and brokerage?
+3. How variable are final returns and maximum drawdowns under 1,000 bootstrap trade sequences?
+4. What is the probability of reaching 10%, 20%, 30%, 40% or 50% peak-to-trough drawdown?
+5. Does any observed result persist across instruments and date windows without parameter tuning?
 
-## Locked strategy
-- SMA: 21 periods.
-- RSI: 14 periods, Wilder-style smoothing.
-- Long: yesterday RSI < 10 and today's open < yesterday's close.
-- Short: yesterday RSI > 90 and today's open > yesterday's close.
+## Locked rules
+- 21-period SMA.
+- 14-period Wilder RSI.
+- Long when yesterday RSI < 10 and today's open < yesterday's close.
+- Short when yesterday RSI > 90 and today's open > yesterday's close.
 - Entry at today's open.
-- Stop reference: low/high of entry candle.
-- Take profit: first SMA touch/cross.
-- Starting equity: INR 100,000.
-- Nominal risk: 1% current equity per trade.
+- Target is the prior-session 21-SMA for a causal daily implementation.
+- Default requested stop mode entry_bar_extreme: today's entry-bar low/high. This is non-causal for sizing.
+- Causal comparison stop mode previous_bar_extreme: previous session low/high.
+- Starting equity INR 100,000.
+- Nominal risk 1% of current equity.
 - One open position at a time.
 
-## Critical interpretation
-Daily OHLC does not reveal the final low/high of today's entry candle at the moment the open is traded. Therefore the literal stop/sizing rule is non-causal. The implementation preserves it for reproducibility, flags NON_CAUSAL_ENTRY_CANDLE_STOP=true, and activates the stop from the following session. A future causal phase must use an ex-ante stop or intraday data.
-
-When a later daily bar touches both stop and SMA target, intrabar order is unknowable, so the conservative policy is stop first. Gap-through events fill at the open. Integer sizing is rounded down to lot size.
+## Execution policy
+- Open gaps through a stop/target fill at the open.
+- If both stop and target are touched on a later daily bar, stop is assumed first.
+- Literal entry-bar stop mode does not activate that stop until the next session.
+- Causal previous-bar stop mode is active on the entry session.
+- Integer quantity is floored to the lot size.
+- All modeled trading costs are explicit parameters.
 
 ## Phases
-### Phase 0 — Governance / bootstrap
-COMPLETE. Repository branch model, plan, status, error log, and decision log established.
+### Phase 0 - Governance
+COMPLETE.
 
-### Phase 1 — Strategy implementation
-IN PROGRESS. Data cache, indicators, explicit fills, risk sizing, costs, Monte Carlo, vectorbt reconciliation, tests, and manual workflow.
+### Phase 1 - Strategy implementation
+IN PROGRESS at 85%. Code, tests, cost model, Monte Carlo, cache, reconciliation and workflow are implemented.
 
-Exit gate: tests pass, edge cases are deterministic, and one run is reproducible from frozen data plus seed.
+### Phase 2 - Data acquisition and freeze
+NOT STARTED. Freeze exact raw CSV, validate missing/duplicate bars, corporate actions, timezone and source metadata.
 
-### Phase 2 — Data acquisition and freeze
-NOT STARTED. Freeze the exact raw CSV, validate missing/duplicate bars, corporate actions, timezone, and source metadata.
+### Phase 3 - Primary backtest
+NOT STARTED. Run both literal and causal stop modes where data permits, without parameter optimization.
 
-### Phase 3 — Primary backtest
-NOT STARTED. Report trade count, win rate, expectancy, profit factor, Sharpe, max drawdown, CAGR, and complete trade ledger.
+### Phase 4 - Monte Carlo
+IMPLEMENTED, NOT EXECUTED. 1,000 with-replacement trade-return paths, final-return and max-drawdown percentiles, drawdown risk-of-ruin.
 
-### Phase 4 — Monte Carlo robustness
-IMPLEMENTED, NOT EXECUTED. Bootstrap completed trade returns with replacement, 1,000 paths, final-return percentiles, max-drawdown percentiles, and drawdown risk-of-ruin.
+### Phase 5 - Sensitivity
+NOT STARTED. Slippage, brokerage, date-window, instrument and stop-mode sensitivities.
 
-### Phase 5 — Sensitivity
-NOT STARTED. Slippage/brokerage grids, alternate date windows, alternate liquid instruments, and causal-vs-literal execution comparison.
+### Phase 6 - Statistical validation
+NOT STARTED. Bootstrap intervals, benchmark comparison, and later DSR/PBO after the primary result is frozen.
 
-### Phase 6 — Statistical validation
-NOT STARTED. Bootstrap confidence intervals, benchmark comparison, and later DSR/PBO analysis after the primary result is frozen.
+### Phase 7 - Manuscript
+NOT STARTED. Full methods, data provenance, results, figures, limitations, conclusion and future work.
 
-### Phase 7 — Manuscript
-NOT STARTED. Methods, data provenance, results, tables, plots, limitations, conclusion, future research.
-
-## Reproducibility contract
-Record git SHA, Python/package versions, ticker, date range, raw-data hash/path, strategy parameters, costs, Monte Carlo seed/path count, execution mode, and known errors for every published result.
+## Reproducibility
+Record git SHA, package versions, ticker, date range, raw-data hash/path, strategy parameters, costs, Monte Carlo seed and path count, and execution mode for every published result.
