@@ -2,26 +2,20 @@
 
 ## 2026-09-23
 
-### E001 - Empty repository
-The repository had no initial commit. Resolved by bootstrapping main.
+E001 - Empty repository. Resolved by bootstrapping main.
 
-### E002 - Initial long-form repository write rejected
-The first bulk write was rejected by the execution safety layer. Resolved by using Git object blobs and explicit trees/commits.
+E002 - Initial long-form write rejected by the execution safety layer. Resolved with Git object blobs and explicit trees.
 
-### E003 - Entry-candle stop look-ahead
-The final low/high of the entry candle is unavailable at the open. The requested literal mode remains available as entry_bar_extreme and is explicitly flagged NON-CAUSAL. A causal mode using the previous bar low/high is now available.
+E003 - Entry-candle stop look-ahead. Literal entry_bar_extreme remains available but is flagged NON-CAUSAL. previous_bar_extreme is the causal daily comparison.
 
-### E004 - Same-day stop/target ordering
-Daily OHLC cannot reveal intrabar order. Later-day conflicts use stop-first. Gap-through events fill at the open.
+E004 - Same-day stop/target order is unknowable from daily OHLC. Later-day conflicts use stop-first; gap-through uses the open.
 
-### E005 - Integer position sizing
-Exact 1% risk is not always representable with integer units. Quantity is rounded down to lot size.
+E005 - Integer sizing cannot always represent exactly 1% risk. Quantity is rounded down to lot size.
 
-### E006 - Instrument-specific costs
-Brokerage, STT, stamp duty, exchange, GST and SEBI charges differ by instrument and segment. All are parameterized.
+E006 - Instrument-specific costs differ. Brokerage, STT, stamp, exchange, GST and SEBI charges remain parameterized.
 
-### E007 - Current-bar SMA target look-ahead
-The target initially used the current day's SMA, which includes information unavailable at the open. Resolved by defining the daily target as the prior-session 21-SMA.
+E007 - Current-bar SMA target look-ahead. Resolved by using the prior-session 21-SMA as the daily target.
 
-### E008 - Local network execution unavailable
-The container could not resolve github.com, and yfinance/vectorbt are not installed locally. Local integration execution is therefore not claimed; repository CI is the validation path.
+E008 - Local environment cannot reach github.com and lacks yfinance/vectorbt. Repository CI is the integration-validation path.
+
+E009 - CI dependency conflict. vectorbt 1.1.0 requires pandas >=3.0.3 and <4.0, while requirements previously pinned pandas <3. Resolved by moving the pandas constraint to >=3.0.3,<4.
