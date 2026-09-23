@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from backtest import CostModel, add_indicators, monte_carlo_simulation, run_backtest
+from backtest import CostModel, add_indicators, monte_carlo_simulation, position_size, run_backtest
 
 
 def synthetic_data(n=80):
@@ -26,12 +26,24 @@ def test_indicator_columns_exist():
 
 def test_previous_sma_is_shifted_and_not_current_bar():
     out = add_indicators(synthetic_data())
-    valid = out.dropna(subset=["SMA21", "PrevSMA21"])
-    assert np.allclose(valid["PrevSMA21"].to_numpy(), valid["SMA21"].shift(1).dropna().to_numpy())
+    expected = out["SMA21"].shift(1)
+    valid = expected.notna()
+    assert np.allclose(out.loc[valid, "PrevSMA21"], expected.loc[valid])
+
+
+def test_position_size_risks_one_percent_before_rounding():
+    qty, risk = position_size(100000, 100, 90, risk_fraction=0.01, lot_size=1)
+    assert qty == 100
+    assert risk == 1000
 
 
 def test_monte_carlo_shape_and_risk_keys():
-    results, summary, paths = monte_carlo_simulation([0.01, -0.02, 0.03, -0.01], 100000, 1000, 42)
+    results, summary, paths = monte_carlo_simulation(
+        [0.01, -0.02, 0.03, -0.01],
+        starting_equity=100000,
+        n_sims=1000,
+        seed=42,
+    )
     assert results.shape == (1000, 2)
     assert paths.shape == (1000, 5)
     assert set(summary["risk_of_ruin"]) == {"10%", "20%", "30%", "40%", "50%"}
@@ -45,3 +57,13 @@ def test_empty_trades_do_not_crash_backtest():
     assert trades.empty
     assert len(equity) == 80
     assert np.isfinite(metrics["final_equity"])
+
+
+def test_causal_stop_mode_is_explicit():
+    _, _, metrics = run_backtest(
+        synthetic_data(),
+        costs=CostModel(brokerage_per_order=0, slippage_bps=0),
+        stop_mode="previous_bar_extreme",
+    )
+    assert metrics["NON_CAUSAL_ENTRY_CANDLE_STOP"] is False
+    assert metrics["stop_mode"] == "previous_bar_extreme"
