@@ -1,0 +1,99 @@
+name: Phase 2 Primary Backtest
+
+on:
+  push:
+    branches:
+      - phase-2-data-primary-backtest
+  workflow_dispatch:
+    inputs:
+      ticker:
+        description: Yahoo Finance ticker
+        required: true
+        default: ^NSEI
+      start:
+        description: Start date YYYY-MM-DD
+        required: true
+        default: 2010-01-01
+      end:
+        description: End date YYYY-MM-DD
+        required: true
+        default: 2026-09-23
+      stop_mode:
+        description: Stop definition
+        required: true
+        default: previous_bar_extreme
+        type: choice
+        options:
+          - previous_bar_extreme
+          - entry_bar_extreme
+      monte_carlo:
+        description: Monte Carlo paths
+        required: true
+        default: '1000'
+      seed:
+        description: RNG seed
+        required: true
+        default: '42'
+      refresh_data:
+        description: Force redownload
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  primary-backtest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+
+      - uses: actions/cache@v4
+        with:
+          path: data/raw
+          key: phase2-yfinance-\${{ github.ref_name }}-\${{ inputs.ticker || '^NSEI' }}-\${{ inputs.start || '2010-01-01' }}-\${{ inputs.end || '2026-09-23' }}
+          restore-keys: |
+            phase2-yfinance-\${{ github.ref_name }}-
+
+      - run: python -m pip install -r requirements.txt
+      - run: python -m pytest -q
+
+      - name: Run primary backtest
+        env:
+          MPLBACKEND: Agg
+        shell: bash
+        run: |
+          TICKER="\${{ inputs.ticker || '^NSEI' }}"
+          START="\${{ inputs.start || '2010-01-01' }}"
+          END="\${{ inputs.end || '2026-09-23' }}"
+          STOP_MODE="\${{ inputs.stop_mode || 'previous_bar_extreme' }}"
+          MC="\${{ inputs.monte_carlo || '1000' }}"
+          SEED="\${{ inputs.seed || '42' }}"
+          REFRESH=""
+          if [ "\${{ inputs.refresh_data || 'false' }}" = "true" ]; then REFRESH="--refresh-data"; fi
+
+          python backtest.py \
+            --ticker "$TICKER" \
+            --start "$START" \
+            --end "$END" \
+            --stop-mode "$STOP_MODE" \
+            --n-mc "$MC" \
+            --seed "$SEED" \
+            $REFRESH \
+            --output-dir results
+
+      - name: Display research manifest
+        run: cat results/backtest_metrics.json
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: phase2-primary-backtest
+          path: |
+            results/
+            data/raw/
