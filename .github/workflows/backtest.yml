@@ -1,6 +1,7 @@
 name: Daily Mean-Reversion Backtest
 
 on:
+  pull_request:
   workflow_dispatch:
     inputs:
       ticker:
@@ -15,6 +16,14 @@ on:
         description: End date YYYY-MM-DD, blank for latest
         required: false
         default: ''
+      stop_mode:
+        description: Stop definition
+        required: true
+        default: previous_bar_extreme
+        type: choice
+        options:
+          - previous_bar_extreme
+          - entry_bar_extreme
       monte_carlo:
         description: Monte Carlo paths
         required: true
@@ -33,7 +42,20 @@ permissions:
   contents: read
 
 jobs:
-  backtest:
+  pr-smoke:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: pytest -q
+
+  manual-backtest:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -44,17 +66,29 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: data/raw
-          key: yfinance-${{ inputs.ticker }}-${{ inputs.start }}-${{ inputs.end }}
-          restore-keys: yfinance-${{ inputs.ticker }}-
+          key: yfinance-\${{ inputs.ticker }}-\${{ inputs.start }}-\${{ inputs.end }}
+          restore-keys: |
+            yfinance-\${{ inputs.ticker }}-
       - run: pip install -r requirements.txt
       - run: pytest -q
       - name: Run backtest
         env:
           MPLBACKEND: Agg
+        shell: bash
         run: |
-          EXTRA=''
-          if [ "${{ inputs.refresh_data }}" = 'true' ]; then EXTRA='--refresh-data'; fi
-          python backtest.py --ticker "${{ inputs.ticker }}" --start "${{ inputs.start }}" ${EXTRA} --n-mc "${{ inputs.monte_carlo }}" --seed "${{ inputs.seed }}" --output-dir results
+          EXTRA_REFRESH=''
+          END_ARG=''
+          if [ "\${{ inputs.refresh_data }}" = 'true' ]; then EXTRA_REFRESH='--refresh-data'; fi
+          if [ -n "\${{ inputs.end }}" ]; then END_ARG="--end \${{ inputs.end }}"; fi
+          python backtest.py \
+            --ticker "\${{ inputs.ticker }}" \
+            --start "\${{ inputs.start }}" \
+            \${END_ARG} \
+            --stop-mode "\${{ inputs.stop_mode }}" \
+            --n-mc "\${{ inputs.monte_carlo }}" \
+            --seed "\${{ inputs.seed }}" \
+            \${EXTRA_REFRESH} \
+            --output-dir results
       - uses: actions/upload-artifact@v4
         with:
           name: backtest-results
