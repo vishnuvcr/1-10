@@ -20,9 +20,17 @@ for symbol in SYMBOLS:
         rows.append({"symbol": symbol, "trade_count": 0, "status": "missing_trades_file"})
         continue
 
-    trades = pd.read_csv(path)
+    try:
+        trades = pd.read_csv(path)
+    except pd.errors.EmptyDataError:
+        trades = pd.DataFrame()
+
     if trades.empty:
-        rows.append({"symbol": symbol, "trade_count": 0, "status": "no_trades"})
+        rows.append({
+            "symbol": symbol,
+            "trade_count": 0,
+            "status": "no_trades",
+        })
         continue
 
     returns = trades["return_on_equity"].to_numpy(dtype=float)

@@ -2,19 +2,12 @@
 
 ## 2026-09-23
 
-### Static review
-- Removed current-bar SMA look-ahead.
-- Added prior-session SMA target.
-- Added explicit causal previous-bar stop mode.
-- Added tests for shifted SMA, position sizing, Monte Carlo output shape, causal mode, flat-market no-signal behavior, and same-day stop/target ordering.
+Phase 1 CI: PASS, 7 tests.
+Phase 2 primary NIFTY 2010-2026: PASS, 4,106 rows, zero qualifying signals at RSI 10/90.
+Phase 3 fixed universe 2010-2026: PASS, all seven symbols executed with zero trade population.
+Phase 3 maximum-history diagnostic: PASS, 2007-2026 for ^NSEI and 1996/2002-2026 for the equities; five symbols produced only 1-9 trades each.
+Phase 5 cost sensitivity: PASS, 84 cost-grid combinations.
+Phase 6 first attempt: FAILED in validator on an empty no-trade CSV; unit tests still passed.
+Phase 6 fix: zero-trade CSV is now treated as a valid no-trade symbol and excluded from mean/sign tests.
 
-### CI findings
-Run 35850749739 failed at dependency installation because vectorbt 1.1.0 requires pandas >=3.0.3,<4. That was fixed.
-
-Run 35851173440 then installed the corrected dependency set successfully, including pandas 3.0.6, vectorbt 1.1.0 and yfinance 1.7.0, but failed one invalid test fixture: the trending fixture generated legitimate short signals. The backtest itself returned 59 trades for that fixture.
-
-### Fix
-Replaced the invalid empty-trade fixture with a flat market dataset that has RSI=50 and no gap signals. Added a direct test that both stop and target can be touched on a daily bar and the research policy resolves the ambiguity as stop-first.
-
-### Status
-A new validation run must pass all tests before Phase 1 can close.
+Current statistical interpretation remains descriptive-only because every symbol has fewer than 30 completed trades.
