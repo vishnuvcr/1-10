@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import re
@@ -70,6 +71,14 @@ def current_git_sha() -> str | None:
         ).strip()
     except Exception:
         return None
+
+
+def sha256_file(path: str | Path) -> str:
+    digest = hashlib.sha256()
+    with Path(path).open("rb") as handle:
+        for block in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
 
 
 def validate_ohlcv(df: pd.DataFrame) -> pd.DataFrame:
@@ -778,11 +787,17 @@ def main() -> None:
     trades.to_csv(output_dir / "trades.csv", index=False)
     equity.to_csv(output_dir / "equity_curve.csv")
 
+    cache_path = Path(args.data_cache_dir) / f"{safe_name(args.ticker)}.csv"
     metrics["research_manifest"] = {
         "git_sha": current_git_sha(),
         "ticker": args.ticker,
         "start": args.start,
         "end": args.end,
+        "data_cache_file": str(cache_path),
+        "data_sha256": sha256_file(cache_path),
+        "data_rows": int(len(data)),
+        "data_first_date": str(data.index.min().date()),
+        "data_last_date": str(data.index.max().date()),
         "starting_equity": args.starting_equity,
         "risk_fraction": args.risk_fraction,
         "lot_size": args.lot_size,
